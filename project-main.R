@@ -1,9 +1,25 @@
 # The Political Economy of Women's Suffrage and World War I
 # Madison Arnsbarger
-# 2025
+# August 2021-present
 
-# Step 1
+# Settings
+setwd("~/Dropbox/Weber/Research/JMP") # set working directory for entire project
 
-# Step 2
+options(
+  scipen = 999, # no scientific notation
+  max.print=10000 # set default value limit
+)
 
-# Step 3
+# Load libraries
+library(readxl)
+library(dplyr)
+library(haven)
+library(stringr)
+library(tidyr)
+
+
+# Step 1: Clean raw data
+
+# Step 2: Merge data
+
+# Step 3: Analysis
