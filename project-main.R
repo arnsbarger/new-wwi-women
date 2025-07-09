@@ -19,6 +19,7 @@ library(tidyr)
 
 
 # Step 1: Clean raw data
+source("~/git/new-wwi-women/clean-voteview.R")
 
 # Step 2: Merge data
 
