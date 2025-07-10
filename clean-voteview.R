@@ -85,6 +85,11 @@ cong63$ID_STATEDIST[cong63$id=="MH06304652"] <- "Utah00b" # HOWELL, Joseph
 cong63$ID_STATEDIST[cong63$id=="MH06303052"] <- "Washington00a" # FALCONER, Jacob Alexander
 cong63$ID_STATEDIST[cong63$id=="MH06301172"] <- "Washington00b" # BRYAN, James Wesley
 
+#### Clean up 65th Congress ####
+cong65 <- proh65
+
+rm(proh65)
+
 #### Clean up 66th Congress ####
 table(suff66$state_abbrev)
 
@@ -106,7 +111,7 @@ cong66 <- suff66 %>%
     congress = 66
   )
 
-# rm(suff66)
+rm(suff66)
 
 # Missing x congressional districts
 print(435 - nrow(cong66)) # 14
@@ -149,36 +154,4 @@ cong66$ID_STATEDIST[cong66$id=="MH06609792"] <- "Pennsylvania00b" # WALTERS, And
 cong66$ID_STATEDIST[cong66$id=="MH06603478"] <- "Pennsylvania00c" # GARLAND, Mahlon Morris
 cong66$ID_STATEDIST[cong66$id=="MH06601274"] <- "Pennsylvania00d" # BURKE, William Joseph
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+rm(usps)
