@@ -25,12 +25,18 @@ library(stringr)
 library(geosphere)
 library(viridis)
 library(cowplot)
+library(purrr)
 
 
-# Step 1: Clean raw data
+# Clean Voteview data
 source("~/git/new-wwi-women/clean-voteview.R")
+
+# Harmonize congressional district boundaries from 63rd and 65th to 66th Congress.
 source("~/git/new-wwi-women/harmonize-congressional-districts.R")
 
-# Step 2: Merge data
-
-# Step 3: Analysis
+# Clean county-level data
+  # Census
+  # Etc.
+# Merge county-level data and aggregate up to congressional district.
+# Merge congressional district-level data.
+# Analysis
