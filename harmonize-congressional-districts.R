@@ -204,7 +204,7 @@ sort(unique(shp66_cd$ID_STATEDIST))
 # 
 # 
 
-# Based on vision inspection, manually code the 66th district to which each 63rd district corresponds ####
+# Based on vision inspection, MANUALLY code the 66th district to which each 63rd district corresponds ####
 
 # Drop 66th CDs if too severely redistricted and unlinkable to 63rd 
 # AL, CO, FL, GA, ID, MA, MI, MN, MI, MT, NY, OH, OK, SC, TX, UT, WA, WV
@@ -275,5 +275,7 @@ cong66$manual_link_to65 <- ifelse(
   yes = 1,
   no = 0
 )
+
+
 
 
