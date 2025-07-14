@@ -206,7 +206,7 @@ sort(unique(shp66_cd$ID_STATEDIST))
 
 # Based on vision inspection, MANUALLY code the 66th district to which each 63rd district corresponds ####
 
-# Drop 66th CDs if too severely redistricted and unlinkable to 63rd 
+# Flag 66th CDs if too severely redistricted and unlinkable to 63rd 
 # AL, CO, FL, GA, ID, MA, MI, MN, MI, MT, NY, OH, OK, SC, TX, UT, WA, WV
 unlinkable <- c(
   "Alabama06","Alabama07","Alabama09","Alabama10",
@@ -251,7 +251,7 @@ cong66$manual_link_to63 <- ifelse(
   no = 0
 )
 
-# Drop 66th CDs if too severely redistricted and unlinkable to 65th 
+# Flag 66th CDs if too severely redistricted and unlinkable to 65th 
 # ID, MI, MT, NY, TX
 unlinkable <- c(
   # ID 0-1, 0-2
@@ -276,6 +276,7 @@ cong66$manual_link_to65 <- ifelse(
   no = 0
 )
 
+rm(unlinkable)
 
 
 

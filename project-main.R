@@ -35,8 +35,17 @@ source("~/git/new-wwi-women/clean-voteview.R")
 source("~/git/new-wwi-women/harmonize-congressional-districts.R")
 
 # Clean county-level data
-  # Census
-  # Etc.
+source("~/git/new-wwi-women/clean-cnty-data.R")
+  # WWI Casualties (from Andy Ferrara)
+  # WWI Draft (from Andy Ferrara)
+  # ICPSR 1910 county characteristics
+  # ICPSR 1860 county characteristics
+  # 1910 Census characteristics (from NBER)
+  # Civil War casualties, etc.
+  # Unions (from Henry Downes)
+
 # Merge county-level data and aggregate up to congressional district.
+
 # Merge congressional district-level data.
+
 # Analysis
