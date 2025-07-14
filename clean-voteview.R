@@ -32,7 +32,7 @@ table(suff63$state_abbrev)
 cong63 <- 
   merge( # combine suffrage and prohibition votes
     x = suff63, 
-    y = proh63 %>% select(id, V1), 
+    y = proh63 %>% dplyr::select(id, V1), 
     by = "id",
     all = TRUE
   ) %>%
