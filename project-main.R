@@ -45,6 +45,7 @@ source("~/git/new-wwi-women/clean-cnty-data.R")
   # Unions (from Henry Downes)
 
 # Merge county-level data and aggregate up to congressional district.
+source("~/git/new-wwi-women/merge-cnty-to-cd.R")
 
 # Merge congressional district-level data.
 
