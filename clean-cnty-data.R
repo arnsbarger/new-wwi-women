@@ -65,33 +65,16 @@ cnty_draft <-
   ) %>%
   filter(
     icpsrst != 98 # Remove Washington, D.C.
+  ) %>%
+  mutate(
+    icpsrcty = if_else(icpsrst == 54 & icpsrcty == 875, 0650, icpsrcty), # James, TN became Hamilton, TN.
+    icpsrcty = if_else(icpsrst == 37 & icpsrcty == 10, 1170, icpsrcty), # Armstrong, SD became Stanley, SD.
+  ) %>%
+  group_by(icpsrst, icpsrcty) %>%
+  summarise( # Since I corrected the counties above, now their codes are duplicates; need to sum up by county/state.
+    across(starts_with("wwi_"), sum, na.rm = TRUE),
+    .groups = "drop"
   ) 
-# %>%
-#   mutate( # These counties were created post-1910 and therefore don't merge with congressionanl district crosswalks; re-coding so they merge to the appropriate district, at least. 
-#     icpsrcty = if_else(icpsrst == 73 & icpsrcty == 510, 650, icpsrcty), # Pend Oreille created out of Stevens County on March 1, 1911
-#     icpsrcty = if_else(icpsrst == 72 & icpsrcty == 310, 130, icpsrcty), # Jefferson County was created on December 12, 1914, from a portion of Crook County
-#     icpsrcty = if_else(icpsrst == 72 & icpsrcty == 170, 130, icpsrcty), # Deschutes County  created in 1916 out of part of Crook County
-#     district = if_else(icsprst == 68, 10, icpsrcty), # All of Wyoming is 1 district in 66th congress
-#     district = if_else(icsprst == 66, 0, district), # All of New Mexico is 1 district in 66th congress
-#     district = if_else(icsprst == 65, 0, district), # All of Nevada is 1 district in 66th congress
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 1090, 210, icpsrcty), # Wibaux County was created by the Montana Legislature in 1914 from parts of Dawson, Fallon, and Richland Counties
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 1090, 590, icpsrcty), # Wheatland County was established on February 22, 1917, with areas partitioned from Meagher and Sweet Grass counties.
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 1010, 990, icpsrcty), # Toole established in 1914 from parts of Hill County and Teton County 
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 950, 990, icpsrcty), # Stillwater established in 1914 (assigning Teton b/c same congressional district)
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 910, 210, icpsrcty), # established Sheridan County in 1913 from portions of Dawson and Valley Counties
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 830, 210, icpsrcty), # Richland County was created by the Montana Legislature in 1914 from part of Dawson County.
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 790, 210, icpsrcty), # Prairie County was created by the Montana Legislature in 1915 out of parts of Custer, Dawson, and Fallon Counties
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 710, 150, icpsrcty), # Before February 5, 1915, Phillips County was part of Blaine County, and before 1912 both were part of Chouteau County.
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 650, 590, icpsrcty), # Musselshell County was created in 1911 by Montana Governor Edwin L. Norris. The area was taken from Fergus, Yellowstone, and Meagher counties.
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 610, 10, icpsrcty), # Mineral is in Disrict 1
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 410, 510, icpsrcty), # Hill neighbors Liberty within-district
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 250, 170, icpsrcty), # Fallon created in 1913 from a portion of Custer County.
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 110, 170, icpsrcty), # Prior to settlement the land of Carter County was occupied by the Sioux tribe; neighbors Custer/Fallon.
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 50, 510, icpsrcty), # In 1912 Blaine, Phillips and Hill counties were formed from the area of Chouteau County. The original boundary of Blaine County included a portion of land in the west that is now included in Phillips County
-#     icpsrcty = if_else(icpsrst == 64 & icpsrcty == 30, 510, icpsrcty), # Big Horn founded in 1913, same district as Liberty.
-#     icpsrcty = if_else(icpsrst == 63 & icpsrcty == 30, 150, icpsrcty), # Ada partitioned from Boise County. 
-#   )
-
 
 # ICPSR County Characteristics ####
 # print(lapply(cnty_icpsr1910, attr, "label"))
@@ -132,6 +115,25 @@ cnty_icpsr1910 <-
   rename(
     icpsrst = state,
     icpsrcty = county
+  ) %>%
+  filter(
+    icpsrcty > 0,
+    icpsrcty != 1130, # Shannon County unorganized until 1982.
+    !icpsrst %in% c(
+      82, # Hawaii
+      98 # Washington, DC
+    )) %>%
+  mutate(
+    icpsrcty = if_else(icpsrst == 37 & icpsrcty == 1330, 70, icpsrcty), # Washington, SD became Bennett, SD.
+  ) %>%
+  group_by(icpsrst, icpsrcty) %>%
+  summarise( # Since I corrected the counties above, now their codes are duplicates; need to sum up by county/state.
+    across(
+      .cols = where(is.numeric) & !any_of(c("icpsrst", "icpsrcty")),
+      .fns = sum,
+      na.rm = TRUE
+    ),
+    .groups = "drop"
   )
 
 cnty_icpsr1860 <- 
@@ -149,6 +151,22 @@ cnty_nber <-
   rename(
     icpsrst = stateicp,
     icpsrcty = county
+  ) %>%
+  filter(
+    !icpsrst == 98 # Washington, DC
+  ) %>%
+  mutate(
+    icpsrcty = if_else(icpsrst == 72 & icpsrcty == 605, 10, icpsrcty), # Union, OR was Baker, OR.
+    icpsrcty = if_else(icpsrst == 65 & icpsrcty == 510, 10, icpsrcty) # Put Carson City, NV into literally any other county that exists in cw_cnty_cd_66 (NV is 1 district, so as long as its capital's population gets counted)
+  ) %>%
+  group_by(icpsrst, icpsrcty) %>%
+  summarise( # Since I corrected the counties above, now their codes are duplicates; need to sum up by county/state.
+    across(
+      .cols = where(is.numeric) & !any_of(c("icpsrst", "icpsrcty")),
+      .fns = sum,
+      na.rm = TRUE
+    ),
+    .groups = "drop"
   )
 
 # Civil War ####
@@ -161,7 +179,8 @@ cnty_civil_war <-
   ) %>%
   filter(
     !is.na(icpsrst) &
-    !is.na(icpsrcty)
+    !is.na(icpsrcty) &
+    icpsrst != 98 # Remove Washington, D.C.
   )
 
 # American Federation of Labor (AFL) ####
@@ -181,6 +200,9 @@ cnty_unions <-
     names_from = data_year,
     values_from = union_members
   ) %>%
+  rename(
+    icpsrcty = countyicp,
+  ) %>%
   mutate(
     icpsrst = case_when(
       st_abbrev == "CA" ~ 71,
@@ -188,13 +210,21 @@ cnty_unions <-
       st_abbrev == "PA" ~ 14,
       st_abbrev == "WI" ~ 25,
       TRUE ~ NA_real_
-      )
+      ),
+    icpsrcty = as.numeric(icpsrcty),
+    icpsrcty = if_else(icpsrst == 25 & icpsrcty == 780, 330, icpsrcty) # Menomonee is the county seat of Dunn
     ) %>%
-  rename(
-    icpsrcty = countyicp,
-  ) %>%
   rename_with(~ paste0("AFL", .x), all_of(as.character(1910:1920))) %>%
-  dplyr::select(-st_abbrev)
+  dplyr::select(-st_abbrev) %>%
+  group_by(icpsrst, icpsrcty) %>%
+  summarise( # Since I corrected the counties above, now their codes are duplicates; need to sum up by county/state.
+    across(
+      .cols = where(is.numeric) & !any_of(c("icpsrst", "icpsrcty")),
+      .fns = sum,
+      na.rm = TRUE
+    ),
+    .groups = "drop"
+  )
 
 # Clean up Global Environment
 rm(cw, desired_vars)

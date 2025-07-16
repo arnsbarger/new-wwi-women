@@ -44,6 +44,9 @@ source("~/git/new-wwi-women/clean-cnty-data.R")
   # Civil War casualties, etc.
   # Unions (from Henry Downes)
 
+# Clean the county-to-congressinoal district crosswalks
+source("~/git/new-wwi-women/clean-cnty-cd-crosswalks.R")
+
 # Merge county-level data and aggregate up to congressional district.
 source("~/git/new-wwi-women/merge-cnty-to-cd.R")
 
