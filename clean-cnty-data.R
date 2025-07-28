@@ -106,15 +106,46 @@ desired_vars <- c( # Set variables I'd like to pull from 1910 and 1860, whenever
   "fbwtot", # Foreign white population
   "nwill10", # Illiterate native white population 10+
   "fbwill10", # Illiterate foreign white population 10+
-  "negill10" # Illiterate Negro population 10+
+  "negill10", # Illiterate Negro population 10+
+  "fbwmtot", # Foreign white male population 
+  "fbwftot" # Foreign white female population 
 )
 
 cnty_icpsr1910 <- 
   read_dta("raw/icpsr/ICPSR_02896/DS0022/02896-0022-Data.dta") %>% # Import
   dplyr::select(any_of(desired_vars)) %>% 
+  rename_with(~ paste0(.x, "1910")) %>%
   rename(
-    icpsrst = state,
-    icpsrcty = county
+    icpsrst = state1910,
+    icpsrcty = county1910
+  ) %>%
+  filter(
+    icpsrcty > 0,
+    icpsrcty != 1130, # Shannon County unorganized until 1982.
+    !icpsrst %in% c(
+      82, # Hawaii
+      98 # Washington, DC
+    )) %>%
+  mutate(
+    icpsrcty = if_else(icpsrst == 37 & icpsrcty == 1330, 70, icpsrcty), # Washington, SD became Bennett, SD.
+  ) %>%
+  group_by(icpsrst, icpsrcty) %>%
+  summarise( # Since I corrected the counties above, now their codes are duplicates; need to sum up by county/state.
+    across(
+      .cols = where(is.numeric) & !any_of(c("icpsrst", "icpsrcty")),
+      .fns = sum,
+      na.rm = TRUE
+    ),
+    .groups = "drop"
+  )
+
+cnty_icpsr1920 <- 
+  read_dta("raw/icpsr/ICPSR_02896/DS0024/02896-0024-Data.dta") %>% # Import
+  dplyr::select(any_of(desired_vars)) %>% 
+  rename_with(~ paste0(.x, "1920")) %>%
+  rename(
+    icpsrst = state1920,
+    icpsrcty = county1920
   ) %>%
   filter(
     icpsrcty > 0,
@@ -167,7 +198,8 @@ cnty_nber <-
       na.rm = TRUE
     ),
     .groups = "drop"
-  )
+  ) %>%
+  rename_with(~ paste0(.x, "nber"), .cols = c("totpop1910", "ftot1910", "wftot1910", "totpop1920", "ftot1920", "wftot1920"))
 
 # Civil War ####
 cnty_civil_war <- 

@@ -1,6 +1,7 @@
 # The Political Economy of Women's Suffrage and World War I
 # Madison Arnsbarger
 # August 2021-present
+rm(list = ls())
 
 # Settings
 setwd("~/Dropbox/Weber/Research/JMP") # set working directory for entire project
@@ -26,6 +27,7 @@ library(geosphere)
 library(viridis)
 library(cowplot)
 library(purrr)
+library(tidyverse)
 
 
 # Clean Voteview data
@@ -44,12 +46,14 @@ source("~/git/new-wwi-women/clean-cnty-data.R")
   # Civil War casualties, etc.
   # Unions (from Henry Downes)
 
-# Clean the county-to-congressinoal district crosswalks
+# Clean the county-to-congressional district crosswalks
 source("~/git/new-wwi-women/clean-cnty-cd-crosswalks.R")
 
 # Merge county-level data and aggregate up to congressional district.
 source("~/git/new-wwi-women/merge-cnty-to-cd.R")
 
-# Merge congressional district-level data.
+# Merge & clean congressional district-level data.
+source("~/git/new-wwi-women/clean-cd-data.R")
+
 
 # Analysis
