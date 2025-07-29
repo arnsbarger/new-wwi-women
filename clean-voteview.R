@@ -36,9 +36,7 @@ cong63 <-
     by = "id",
     all = TRUE
   ) %>%
-  filter( # district 0 is the president (no associated district)
-    district_code > 0
-    ) %>% 
+  filter(district_code > 0) %>% # district 0 is the president (no associated district)
   rename( # relabel vote columns
     V238 = V1.x, 
     V228 = V1.y
@@ -66,7 +64,7 @@ cong63 <-
 rm(suff63, proh63)
 
 # CO, ID, IL, MT, OK, PA, TX, UT, WA have multiple at-large districts
-table(cong63$state_abbrev, cong63$cqlabel)
+table(cong63$state_abbrev, cong63$district_code)
 
 # Define new id (ID_STATEDIST) for each district (needed to link across congresses accurately, especially at-large districts)
 cong63 <- merge(y = usps, x = cong63, by.x = "state_abbrev", by.y = "Abbreviation", all.x = TRUE)
@@ -100,12 +98,13 @@ cong63$ID_STATEDIST[cong63$id=="MH06301172"] <- "Washington00b" # BRYAN, James W
 
 #### Clean up 65th Congress ####
 cong65 <- proh65 %>%
+  filter(district_code > 0) %>% # district 0 is the president (no associated district)
   rename(V061 = V1) %>%
   mutate(# define new vars
     atlarge = ifelse(test = district_code %in% 98:99, yes = 1, no = 0), # at-large districts == 98 or 99
     district_code = ifelse(test = district_code %in% 98:99, yes = 0, no = district_code), # set at-large district codes==0 for future merge with county/congressional district characteristics data 
     district_code = ifelse(test = state_abbrev %in% c("AZ", "DE", "NM", "NV", "WY"), yes = 0, no = district_code), # set state-sized districts to code==0 for future merge with county/congressional district characteristics data
-    congress = 63,
+    congress = 65,
     icpsr = as.numeric(icpsr),
     yeaV061 = case_when(
       V061 %in% c(1, 2) ~ 1, # "Yea"
@@ -116,6 +115,39 @@ cong65 <- proh65 %>%
   )
 
 rm(proh65)
+
+# Define new id (ID_STATEDIST) for each district (needed to link across congresses accurately, especially at-large districts)
+cong65 <- merge(y = usps, x = cong65, by.x = "state_abbrev", by.y = "Abbreviation", all.x = TRUE)
+
+cong65$ID_STATEDIST <- paste0(cong65$State, str_pad(cong65$district_code, width = 2, pad = 0))
+
+# Manually edit states with multiple at-large districts
+cong65 %>% filter(district_code==0) %>% dplyr::select(ID_STATEDIST, id, name)
+
+cong65$ID_STATEDIST[cong65$id=="MH06508598"] <- "Idaho00a" # SMITH, Addison Taylor
+cong65$ID_STATEDIST[cong65$id=="MH06503367"] <- "Idaho00b" # FRENCH, Burton Lee
+cong65$ID_STATEDIST[cong65$id=="MH06506065"] <- "Illinois00a" # MASON, William Ernest
+cong65$ID_STATEDIST[cong65$id=="MH06506181"] <- "Illinois00b" # McCORMICK, Joseph Medill
+cong65$ID_STATEDIST[cong65$id=="MH06507730"] <- "Montana00a" # RANKIN, Jeannette
+cong65$ID_STATEDIST[cong65$id=="MH06503013"] <- "Montana00b" #  EVANS, John Morgan
+cong65$ID_STATEDIST[cong65$id=="MH06309332"] <- "Oklahoma00a" # THOMPSON, Joseph Bryan
+cong65$ID_STATEDIST[cong65$id=="MH06506328"] <- "Pennsylvania00a" # McLAUGHLIN, Joseph
+cong65$ID_STATEDIST[cong65$id=="MH06508307"] <- "Pennsylvania00b" # SCOTT, John Roger Kirkpatrick
+cong65$ID_STATEDIST[cong65$id=="MH06502130"] <- "Pennsylvania00c" # CRAGO, Thomas Spencer
+cong65$ID_STATEDIST[cong65$id=="MH06503478"] <- "Pennsylvania00d" # GARLAND, Mahlon Morris
+cong65$ID_STATEDIST[cong65$id=="MH06503489"] <- "Texas00a" #  GARRETT, Daniel Edward
+cong65$ID_STATEDIST[cong65$id=="MH06506342"] <- "Texas00b" # McLEMORE, Atkins Jefferson
+
+# Missing x congressional districts
+print(435 - nrow(cong65)) # 2
+
+cong65 <- rbind( # Add missing rows from original source documents (Congressional Record vol. 58-1, p. 93; House Journal vol. 66-1, p. 42;), which only reports 428 districts. Others filled from Wikipedia.
+  cong65,
+  c("IL", NA, 6016, "MARTIN, Charles", 9, 4, "(IL-04)", 100, 0, 65, 0, "Illinois", "Illinois04"), # 1 - Charles Martin (D) died
+  c("MO", NA, 1769, "CLARK, James Beauchamp", 9, 9, "(MO-09)", 100, 0, 65, 0, "Missouri", "Missouri09") # 2 -  James Beauchamp Clark SPEAKER
+)
+
+print(435 - nrow(cong65)) # All 435 districts accounted for!
 
 #### Clean up 66th Congress ####
 table(suff66$state_abbrev)
