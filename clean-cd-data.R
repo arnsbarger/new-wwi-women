@@ -172,6 +172,52 @@ il_b <- data %>% slice(143) %>% mutate(ID_STATEDIST = replace(ID_STATEDIST, row_
 data <- bind_rows(data, pa_b, pa_c, pa_d, il_b)
 nrow(data) # 435
 
+# # Add rep chars to cong## data
+# cong66 <- merge(x = cong66, y = rep_chars, by = "icpsr", all.x = TRUE)
+# cong65 <- merge(x = cong65, y = rep_chars, by = "icpsr", all.x = TRUE)
+# cong63 <- merge(x = cong63, y = rep_chars, by = "icpsr", all.x = TRUE)
+
+# Merge RHS with LHS:
+data <- merge(
+  x = data, 
+  y = cong66 %>% 
+    dplyr::select(-c("State","district_code")), # duplicate State/district code columns
+  by.x = "ID_STATEDIST", 
+  by.y = "ID_STATEDIST", 
+  all= TRUE
+)
+
+data <- merge(
+  x = data, 
+  y = cong65 %>% dplyr::select(ID_STATEDIST, V061, yeaV061),
+  by.x = "ID_STATEDISTin65",
+  by.y = "ID_STATEDIST",
+  all.x=TRUE
+  )
+
+data <- merge(
+  x = data, 
+  y = cong63 %>% dplyr::select(ID_STATEDIST, V238, V228, yeaV238, yeaV228),
+  by.x = "ID_STATEDISTin63",
+  by.y = "ID_STATEDIST",
+  all.x=TRUE
+)
+
+# Merge in "other" data
+data <- merge(
+  x = data,
+  y = rep_chars,
+  by = "icpsr",
+  all.x = TRUE
+)
+
+data <- merge(
+  x = data,
+  y = state_suffrage,
+  by.x = "State",
+  by.y = "statenam",
+  all.x = TRUE
+)
 
 
 
@@ -179,8 +225,8 @@ nrow(data) # 435
 
 
 
-
-
-
-rm(final_data, cw)
-
+rm(list = c(
+  "final_data", "cw", "rep_chars", "state_suffrage", 
+  "il_b", "pa_b", "pa_c", "pa_d", 
+  "cong63", "cong65", "cong66"
+))
