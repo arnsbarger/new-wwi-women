@@ -47,8 +47,21 @@ cong63 <-
     atlarge = ifelse(test = district_code %in% 98:99, yes = 1, no = 0), # at-large districts == 98 or 99
     district_code = ifelse(test = district_code %in% 98:99, yes = 0, no = district_code), # set at-large district codes==0 for future merge with county/congressional district characteristics data 
     district_code = ifelse(test = state_abbrev %in% c("AZ", "DE", "NM", "NV", "WY"), yes = 0, no = district_code), # set state-sized districts to code==0 for future merge with county/congressional district characteristics data
-    congress = 63
-  )
+    congress = 63,
+    icpsr = as.numeric(icpsr),
+    yeaV238 = case_when(
+      V238 %in% c(1, 2) ~ 1, # "Yea"
+      V238 %in% c(5, 6) ~ 0, # "Nay"
+      V238 == 9 ~ 0, # "Absent"
+      TRUE ~ NA_real_
+    ),
+    yeaV228 = case_when(
+      V228 %in% c(1, 2) ~ 1, # "Yea"
+      V228 %in% c(5, 6) ~ 0, # "Nay"
+      V228 == 9 ~ 0, # "Absent"
+      TRUE ~ NA_real_
+    )
+    )
 
 rm(suff63, proh63)
 
@@ -86,7 +99,21 @@ cong63$ID_STATEDIST[cong63$id=="MH06303052"] <- "Washington00a" # FALCONER, Jaco
 cong63$ID_STATEDIST[cong63$id=="MH06301172"] <- "Washington00b" # BRYAN, James Wesley
 
 #### Clean up 65th Congress ####
-cong65 <- proh65
+cong65 <- proh65 %>%
+  rename(V061 = V1) %>%
+  mutate(# define new vars
+    atlarge = ifelse(test = district_code %in% 98:99, yes = 1, no = 0), # at-large districts == 98 or 99
+    district_code = ifelse(test = district_code %in% 98:99, yes = 0, no = district_code), # set at-large district codes==0 for future merge with county/congressional district characteristics data 
+    district_code = ifelse(test = state_abbrev %in% c("AZ", "DE", "NM", "NV", "WY"), yes = 0, no = district_code), # set state-sized districts to code==0 for future merge with county/congressional district characteristics data
+    congress = 63,
+    icpsr = as.numeric(icpsr),
+    yeaV061 = case_when(
+      V061 %in% c(1, 2) ~ 1, # "Yea"
+      V061 %in% c(5, 6) ~ 0, # "Nay"
+      V061 == 9 ~ 0, # "Absent"
+      TRUE ~ NA_real_
+    )
+  )
 
 rm(proh65)
 
@@ -108,7 +135,14 @@ cong66 <- suff66 %>%
     atlarge = ifelse(test = district_code %in% 98:99, yes = 1, no = 0), # at-large districts == 98 or 99
     district_code = ifelse(test = district_code %in% 98:99, yes = 0, no = district_code), # set at-large district codes==0 for future merge with county/congressional district characteristics data 
     district_code = ifelse(test = state_abbrev %in% c("AZ", "DE", "NM", "NV", "WY"), yes = 0, no = district_code), # set state-sized districts to code==0 for future merge with county/congressional district characteristics data
-    congress = 66
+    congress = 66,
+    icpsr = as.numeric(icpsr),
+    yeaV002 = case_when(
+      V002 %in% c(1, 2) ~ 1, # "Yea"
+      V002 %in% c(5, 6) ~ 0, # "Nay"
+      V002 == 9 ~ 0, # "Absent"
+      TRUE ~ NA_real_
+    )
   )
 
 rm(suff66)
@@ -118,20 +152,20 @@ print(435 - nrow(cong66)) # 14
 
 cong66 <- rbind( # Add missing rows from original source documents (Congressional Record vol. 58-1, p. 93; House Journal vol. 66-1, p. 42;), which only reports 428 districts. Others filled from Wikipedia.
   cong66,
-  c(NA, 4685, "HUDDLESTON, George", "AL", 9, 9, "(AL-09)", 100, 0, 66), # 1 - George Huddleston of AL 9 NOT VOTING
-  c(NA, 5090, "KAHN, Julius", "CA", 9, 4, "(CA-0)", 200, 0, 66), # 2 - Julius Kahn of CA 4 NOT VOTING
-  c(NA, 3599, "GILLETT, Frederick", "MA", 9, 2, "(MA-02)", 200, 0, 66), # 3 - Frederick H. Gillett of MA 2 SPEAKER
-  c(NA, 4887, "JAMES, W. Frank", "MI", 9, 12, "(MI-12)", 200, 0, 66), # 4 - W. Frank James of MI 12 NOT VOTING
-  c(NA, 4734, "HUMPHREYS II, Benjamin G.", "MS", 9, 3, "(MS-03)", 100, 0, 66), # 5 - Benjamin G. Humphreys II of MS 3 NOT VOTING
-  c(NA, 3980, "HAMILL, James A.", "NJ", 9, 12, "(NJ-12)", 100, 0, 66), # 6 - James A. Hamill of NJ 12 NOT VOTING
-  c(NA, 9332, "THOMPSON, Joseph Byran", "OK", 9, 5, "(OK-05)", 100, 0, 66), # 7 - Joseph Bryan Thompson of OK 5 NOT VOTING
-  c(NA, 5154, "KELLY, M. Clyde", "PA", 9, 30, "(PA-30)", 200, 0, 66), # 8 - M. Clyde Kelly of PA 30 NOT VOTING
-  c(NA, 1291, "BURNETT, L. John", "AL", 9, 7, "(AL-07)", 100, 0, 66), # 9 - John Burnett of AL 7 died 2 days before vote
-  c(NA, 2996, "ESTOPINAL, Albert", "LA", 9, 1, "(LA-01)", 100, 0, 66), # 10 - Albert Estopinal of LA 1 died month before the vote
-  c(NA, 9610, "VAN DYKE, Carl", "MN", 9, 4, "(MN-04)", 100, 0, 66), # 11 - vacated seat the day before the vote.
-  c(NA, 6649, "MOORE, R. Walton", "VA", 9, 8, "(VA-08)", 100, 0, 66), # 12 - filled vacant seat month prior; no record of vote.
-  c(NA, 4291, "HELM, Harvey", "KY", 9, 8, "(KY-08)", 100, 0, 66), # 13 - died during previous congress.
-  c(NA, 665, "BERGER, L. Victor", "WI", 9, 5, "(WI-05)", 380, 0, 66) # 14 - ousted due to conviction as a socialist 
+  c(NA, 4685, "HUDDLESTON, George", "AL", 9, 9, "(AL-09)", 100, 0, 66, 0), # 1 - George Huddleston of AL 9 NOT VOTING
+  c(NA, 5090, "KAHN, Julius", "CA", 9, 4, "(CA-0)", 200, 0, 66, 0), # 2 - Julius Kahn of CA 4 NOT VOTING
+  c(NA, 3599, "GILLETT, Frederick", "MA", 9, 2, "(MA-02)", 200, 0, 66, 0), # 3 - Frederick H. Gillett of MA 2 SPEAKER
+  c(NA, 4887, "JAMES, W. Frank", "MI", 9, 12, "(MI-12)", 200, 0, 66, 0), # 4 - W. Frank James of MI 12 NOT VOTING
+  c(NA, 4734, "HUMPHREYS II, Benjamin G.", "MS", 9, 3, "(MS-03)", 100, 0, 66, 0), # 5 - Benjamin G. Humphreys II of MS 3 NOT VOTING
+  c(NA, 3980, "HAMILL, James A.", "NJ", 9, 12, "(NJ-12)", 100, 0, 66, 0), # 6 - James A. Hamill of NJ 12 NOT VOTING
+  c(NA, 9332, "THOMPSON, Joseph Byran", "OK", 9, 5, "(OK-05)", 100, 0, 66, 0), # 7 - Joseph Bryan Thompson of OK 5 NOT VOTING
+  c(NA, 5154, "KELLY, M. Clyde", "PA", 9, 30, "(PA-30)", 200, 0, 66, 0), # 8 - M. Clyde Kelly of PA 30 NOT VOTING
+  c(NA, 1291, "BURNETT, L. John", "AL", 9, 7, "(AL-07)", 100, 0, 66, 0), # 9 - John Burnett of AL 7 died 2 days before vote
+  c(NA, 2996, "ESTOPINAL, Albert", "LA", 9, 1, "(LA-01)", 100, 0, 66, 0), # 10 - Albert Estopinal of LA 1 died month before the vote
+  c(NA, 9610, "VAN DYKE, Carl", "MN", 9, 4, "(MN-04)", 100, 0, 66, 0), # 11 - vacated seat the day before the vote.
+  c(NA, 6649, "MOORE, R. Walton", "VA", 9, 8, "(VA-08)", 100, 0, 66, 0), # 12 - filled vacant seat month prior; no record of vote.
+  c(NA, 4291, "HELM, Harvey", "KY", 9, 8, "(KY-08)", 100, 0, 66, 0), # 13 - died during previous congress.
+  c(NA, 665, "BERGER, L. Victor", "WI", 9, 5, "(WI-05)", 380, 0, 66, 0) # 14 - ousted due to conviction as a socialist 
 )
 
 print(435 - nrow(cong66)) # All 435 districts accounted for!
