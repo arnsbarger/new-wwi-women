@@ -7,6 +7,7 @@ merged_data_a <- merge(
   by.x = c("icpsrst1920", "icpsrcty1920"), # WWI Casualty data collected after 1910
   by.y = c("icpsrst", "icpsrcty"), 
   all = TRUE) # perfect merge - all equivalent to all.x, same length as cw_cnty_cd_66
+length(unique(paste(merged_data_a$icpsrst1920, merged_data_a$district))) # cw_cnty_cd_66 appears to start with 431 unique districts because some states have MULTIPLE at-large districts, all coded as district=0 (3 for PA; 1 for IL don't look unique here)
 
 merged_data_b <- merge(
   x = merged_data_a, 
@@ -14,13 +15,15 @@ merged_data_b <- merge(
   by.x = c("icpsrst1910", "icpsrcty1910"), # Civil War data collected before 1910
   by.y = c("icpsrst", "icpsrcty"), 
   all.x = TRUE) # This technically drops counties that existed during the Civil War, but no longer exist by 1910. If Civil War-related variables start looking important during the analysis, might have to crosswalk the 1860 counties too...
-  
+length(unique(paste(merged_data_b$icpsrst1920, merged_data_b$district))) 
+
 merged_data_c <- merge(
   x = merged_data_b, 
   y = cnty_draft, 
   by.x = c("icpsrst1920", "icpsrcty1920"), # WWI Draft data collected after 1910
   by.y = c("icpsrst", "icpsrcty"), 
   all.x = TRUE) 
+length(unique(paste(merged_data_c$icpsrst1920, merged_data_c$district))) 
 
 merged_data_d <- merge(
   x = merged_data_c, 
@@ -28,6 +31,7 @@ merged_data_d <- merge(
   by.x = c("icpsrst1910", "icpsrcty1910"), # 1860 Census data collected before 1910
   by.y = c("icpsrst", "icpsrcty"), 
   all.x = TRUE) # Same caveat as Civil War merge above
+length(unique(paste(merged_data_d$icpsrst1920, merged_data_d$district))) 
 
 merged_data_e <- merge(
   x = merged_data_d, 
@@ -35,13 +39,15 @@ merged_data_e <- merge(
   by.x = c("icpsrst1910", "icpsrcty1910"), # 1910 Census data collected during 1910
   by.y = c("icpsrst", "icpsrcty"), 
   all = TRUE)
+length(unique(paste(merged_data_e$icpsrst1920, merged_data_e$district))) 
 
 merged_data_f <- merge(
   x = merged_data_e, 
   y = cnty_icpsr1920, 
-  by.x = c("icpsrst1920", "icpsrcty1920"), # 1910 Census data collected during 1910
+  by.x = c("icpsrst1920", "icpsrcty1920"), # 1920 Census data collected during 1920
   by.y = c("icpsrst", "icpsrcty"), 
-  all = TRUE)
+  all.x = TRUE)
+length(unique(paste(merged_data_f$icpsrst1920, merged_data_f$district))) 
 
 merged_data_g <- merge(
   x = merged_data_f, 
@@ -49,6 +55,7 @@ merged_data_g <- merge(
   by.x = c("icpsrst1910", "icpsrcty1910"), # 1910 Census data collected during 1910
   by.y = c("icpsrst", "icpsrcty"), 
   all = TRUE)
+length(unique(paste(merged_data_g$icpsrst1920, merged_data_g$district))) 
 
 merged_data_h <- merge(
   x = merged_data_g, 
@@ -56,6 +63,7 @@ merged_data_h <- merge(
   by.x = c("icpsrst1920", "icpsrcty1920"), # Data set favors more recent county definitions
   by.y = c("icpsrst", "icpsrcty"), 
   all = TRUE)  
+length(unique(paste(merged_data_h$icpsrst1920, merged_data_h$district))) 
 
 # print(lapply(cw_cnty_cd_66, attr, "label"))
 # $m1_weight
@@ -81,7 +89,7 @@ final_data <- merged_data_h %>%
   ) %>%
   group_by(icpsrst1920, district) %>%
   summarise(
-    cnty_change_191020 = max(cnty_change_191020),
+    cnty_change_191020 = max(cnty_change_191020, na.rm = TRUE),
     across(starts_with("m4_"), sum, na.rm = TRUE),
     # across(starts_with("m3_"), sum, na.rm = TRUE),
     # across(starts_with("m2_"), sum, na.rm = TRUE),
@@ -91,4 +99,4 @@ final_data <- merged_data_h %>%
 
 
 # Clean up Global Environment
-rm(list = ls(pattern = "^(merged_data_|cnty_)"), vars_to_aggregate)
+rm(list = ls(pattern = "^(merged_data_|cnty_)"), cw_cnty_cd_66, vars_to_aggregate)
