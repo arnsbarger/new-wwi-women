@@ -1,6 +1,11 @@
 # Combine congressional district level data
 # July 28, 2025
 
+# Goal: 435 congressional districts
+nrow(final_data) # 431
+which(duplicated(final_data %>% dplyr::select(district, icpsrst1920)) | duplicated(final_data %>% dplyr::select(district, icpsrst1920), fromLast = TRUE)) # no duplicates
+table(final_data$icpsrst1920, final_data$district) # Need to duplicate PA-00 x 4, IL-00 x 2
+
 data <- final_data %>% 
   # This step isn't strictly necessary if only keeping m4_ weights from merge-cnty-to-cd.R; written for eralization after exploring robustness to other weighting schemes
   pivot_longer( 
@@ -140,9 +145,42 @@ data <- final_data %>%
     pct_black_GM = pct_black1910 * (south == 0)
   )
 
+cw <- read_excel("raw/geo/icpsrcnt.xls") %>%
+  distinct(State, STATEICP) %>%
+  filter(!is.na(STATEICP))
+
+data <- 
+  merge(x = cw, y = data, by.x = "STATEICP", by.y = "icpsrst1920", all.y = TRUE) %>%
+  rename(
+    icpsrst1920 = STATEICP
+    ) %>%
+  mutate(
+    ID_STATEDIST = paste0(State, str_pad(district, width = 2, pad = 0)),
+    ID_STATEDIST = replace(ID_STATEDIST, row_number() == 113, "Pennsylvania00a"),
+    ID_STATEDIST = replace(ID_STATEDIST, row_number() == 143, "Illinois00a"),
+    across(everything(), ~ ifelse(is.nan(.x) | is.infinite(.x) | is.na(.x), NA, .x))
+  )
+
+# Add rows for multiple at-large districts
+# pa_a <- data %>% slice(113) %>% mutate(ID_STATEDIST = replace(ID_STATEDIST, row_number() == 1, "Pennsylvania00a"))
+pa_b <- data %>% slice(113) %>% mutate(ID_STATEDIST = replace(ID_STATEDIST, row_number() == 1, "Pennsylvania00b"))
+pa_c <- data %>% slice(113) %>% mutate(ID_STATEDIST = replace(ID_STATEDIST, row_number() == 1, "Pennsylvania00c"))
+pa_d <- data %>% slice(113) %>% mutate(ID_STATEDIST = replace(ID_STATEDIST, row_number() == 1, "Pennsylvania00d"))
+# il_a <- data %>% slice(143) %>% mutate(ID_STATEDIST = replace(ID_STATEDIST, row_number() == 1, "Illinois00a"))
+il_b <- data %>% slice(143) %>% mutate(ID_STATEDIST = replace(ID_STATEDIST, row_number() == 1, "Illinois00b"))
+
+data <- bind_rows(data, pa_b, pa_c, pa_d, il_b)
+nrow(data) # 435
 
 
 
 
 
+
+
+
+
+
+
+rm(final_data, cw)
 
