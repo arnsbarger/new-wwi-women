@@ -247,8 +247,8 @@ cong66$ID_STATEDISTin63[cong66$ID_STATEDIST=="Michigan13"] <- "Michigan01" # MI 
 
 cong66$manual_link_to63 <- ifelse(
   test = (cong66$ID_STATEDIST != cong66$ID_STATEDISTin63) | (cong66$ID_STATEDIST %in% unlinkable),
-  yes = 1,
-  no = 0
+  yes = 0,
+  no = 1
 )
 
 # Flag 66th CDs if too severely redistricted and unlinkable to 65th 
@@ -272,8 +272,8 @@ cong66$ID_STATEDISTin65[cong66$ID_STATEDIST=="Montana02"] <- "Montana00a"
 
 cong66$manual_link_to65 <- ifelse(
   test = (cong66$ID_STATEDIST != cong66$ID_STATEDISTin65) | (cong66$ID_STATEDIST %in% unlinkable),
-  yes = 1,
-  no = 0
+  yes = 0,
+  no = 1
 )
 
 rm(unlinkable)
