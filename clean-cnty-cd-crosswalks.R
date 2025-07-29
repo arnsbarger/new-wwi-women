@@ -1,7 +1,7 @@
 # Clean the county-to-district crosswalks
 # July 16, 2025
 
-# Congressional districts-to-county crosswalks for counties formed by 1910.
+# 66th Congressional districts-to-county crosswalks for counties formed by 1910 
 cw_cnty_cd_66 <- 
   read_dta("raw/cd-cnty-crosswalks/150101-V3/crosswalks/CountyToCD-DOA/DOA_stata/Crosswalk_1910_66.dta") %>%
   dplyr::select(
@@ -10,20 +10,21 @@ cw_cnty_cd_66 <-
     district,
     id,
     starts_with("m"),
-    gisjoin_1910
+    gisjoin_1910 # Unique identifier for 1910 counties
   )  %>%
   rename(
     icpsrst1910 = icpsrst,
     icpsrcty1910 = icpsrcty
   )
 
-# Congressional districts-to-county crosswalks for counties formed by 1920.
+# All counties present for 1919 vote NOT accounted for (important for matching control data to correct CD):
+# 68th Congressional districts-to-county crosswalks for counties formed by 1920.
 cw_cnty_cd_68 <- 
   read_dta("raw/cd-cnty-crosswalks/150101-V3/crosswalks/CountyToCD-DOA/DOA_stata/Crosswalk_1920_68.dta") %>%
   dplyr::select(
     icpsrst,
     icpsrcty,
-    gisjoin_1920
+    gisjoin_1920 # Unique identifier for 1920 counties
   ) %>%
   distinct() %>%
   rename(
@@ -35,9 +36,9 @@ cw_cnty_cd_68 <-
 cw_cnty10_cnty20 <- 
   read_dta("raw/cd-cnty-crosswalks/150101-V3/crosswalks/CountyToCounty/1910/1910_stata/Crosswalk_1920_1910.dta") %>%
   dplyr::select(
-    # starts_with("m"), # Commented out because I don't care about distributing population into the corret county; just putting these new counties into the correct 66th congressional district, so don't need these weights.
-    gisjoin_1910,
-    gisjoin_1920
+    # starts_with("m"), # Commented out because I don't care about distributing population into the correct county; just putting these new counties into the correct 66th congressional district, so don't need these weights.
+    gisjoin_1910, # Unique identifier for 1910 counties
+    gisjoin_1920 # Unique identifier for 1920 counties
   ) %>%
   distinct()
 

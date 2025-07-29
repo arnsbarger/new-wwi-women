@@ -1,7 +1,5 @@
 # Clean county-level data
 # July 14, 2025
-# icpsrst
-# icpsrcty
 
 # Geo crosswalk ####
 cw <- 

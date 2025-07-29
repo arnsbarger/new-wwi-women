@@ -52,7 +52,7 @@ source("~/git/new-wwi-women/clean-cnty-cd-crosswalks.R")
 # Merge county-level data and aggregate up to congressional district.
 source("~/git/new-wwi-women/merge-cnty-to-cd.R")
 
-# Merge & clean congressional district-level data.
+# Merge & clean RHS congressional district-level data.
 source("~/git/new-wwi-women/clean-cd-data.R")
 
 
