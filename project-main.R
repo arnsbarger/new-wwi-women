@@ -52,8 +52,15 @@ source("~/git/new-wwi-women/clean-cnty-cd-crosswalks.R")
 # Merge county-level data and aggregate up to congressional district.
 source("~/git/new-wwi-women/merge-cnty-to-cd.R")
 
+# Clean "other" RHS congressional district-level data
+source("~/git/new-wwi-women/clean-other-data.R")
+  # Congressional representative characteristics (ICPSR)
+  # States' voting rights for women
+
 # Merge & clean RHS congressional district-level data.
 source("~/git/new-wwi-women/clean-cd-data.R")
 
+# Compute SSIV
+# source()
 
 # Analysis
