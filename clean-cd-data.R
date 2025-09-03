@@ -22,7 +22,7 @@ data <- final_data %>%
     raw_change_flfp = flfp1920 - flfp1910,
     raw_change_flfp1900_10 = flfp1910 - flfp1900,
     raw_change_flfp1900_20 = flfp1920 - flfp1900,
-    raw_change_flfp_SD = sd(raw_change_flfp1900_20, na.rm = TRUE),
+    raw_change_flfp_Z = as.numeric(scale(raw_change_flfp)),
     
     # Female labor force participation rates, working-age denominator
     flfp1900_16plus = (flf1900 / totf16plus1900) * 100,
@@ -30,7 +30,7 @@ data <- final_data %>%
     flfp1920_16plus = (flf1920 / totf16plus1920) * 100,
     raw_change_flfp_16plus = flfp1920_16plus - flfp1910_16plus,
     raw_change_flfp1900_10_16plus = flfp1910_16plus - flfp1900_16plus,
-    raw_change_flfp_16plus_SD = sd(raw_change_flfp_16plus, na.rm = TRUE),
+    raw_change_flfp_16plus_Z = as.numeric(scale(raw_change_flfp_16plus)),
     
     # Male labor force participation rates, working-age denominator
     mlfp1900_16plus = (mlf1900 / totm16plus1900) * 100,
@@ -38,7 +38,7 @@ data <- final_data %>%
     mlfp1920_16plus = (mlf1920 / totm16plus1920) * 100,
     raw_change_mlfp1910_20_16plus = mlfp1920_16plus - mlfp1910_16plus,
     raw_change_mlfp1900_10_16plus = mlfp1910_16plus - mlfp1900_16plus,
-    raw_change_mlfp_16plus_SD = sd(raw_change_mlfp1910_20_16plus, na.rm = TRUE),
+    raw_change_mlfp_16plus_Z = as.numeric(scale(raw_change_mlfp1910_20_16plus)),
     
     # Chiswick & Robinson labor force participation rates
     flfp1910_cr = ((flf1910 + flf_famfarm_cr1910) / totf16plus1910) * 100,
@@ -53,6 +53,11 @@ data <- final_data %>%
     raw_change_flfp_nonag16plus = ((flf1920 - flf_ind1051920) / totf16plus1920) * 100 - ((flf1910 - flf_ind1051910) / totf16plus1910) * 100,
     raw_change_flfp_non830all = ((flf1920 - flf_occ1950_8301920) / ftot1920) * 100 - ((flf1910 - flf_occ1950_8301910) / ftot1910) * 100,
     raw_change_flfp_non83016plus = ((flf1920 - flf_occ1950_8301920) / totf16plus1920) * 100 - ((flf1910 - flf_occ1950_8301910) / totf16plus1910) * 100,
+    
+    raw_change_mlfp_nonag = ((mlf1920 - mlf_ind1051920) / mtot1920) * 100 - ((mlf1910 - mlf_ind1051910) / mtot1910) * 100,
+    raw_change_mlfp_nonag16plus = ((mlf1920 - mlf_ind1051920) / totm16plus1920) * 100 - ((mlf1910 - mlf_ind1051910) / totm16plus1910) * 100,
+    # raw_change_mlfp_non830all = ((mlf1920 - mlf_occ1950_8301920) / mtot1920) * 100 - ((mlf1910 - mlf_occ1950_8301910) / mtot1910) * 100,
+    # raw_change_mlfp_non83016plus = ((mlf1920 - mlf_occ1950_8301920) / totm16plus1920) * 100 - ((mlf1910 - mlf_occ1950_8301910) / totm16plus1910) * 100,
     
     # White women only
     wflfp1910 = (wflf1910 / wftot1910) * 100,
@@ -76,6 +81,7 @@ data <- final_data %>%
     flfp_npwai1920 = (flf_npwai1920 / ftot1920) * 100,
     raw_change_flfp_npwai = flfp_npwai1920 - flfp_npwai1910,
     raw_change_flfp_npwai1900_10 = flfp_npwai1910 - flfp_npwai1900,
+    raw_change_flfp_npwai_Z = as.numeric(scale(raw_change_flfp_npwai)),
     
     # Ag 
     pct_ag = (flf_ind1051910 / flf1910) * 100,
@@ -206,14 +212,14 @@ data <- merge(
 # Merge in "other" data
 data <- merge(
   x = data,
-  y = rep_chars,
+  y = rep_chars, # House Rep characteristics
   by = "icpsr",
   all.x = TRUE
 )
 
 data <- merge(
   x = data,
-  y = state_suffrage,
+  y = state_suffrage, # State suffrage laws
   by.x = "State",
   by.y = "statenam",
   all.x = TRUE
@@ -230,3 +236,4 @@ rm(list = c(
   "il_b", "pa_b", "pa_c", "pa_d", 
   "cong63", "cong65", "cong66"
 ))
+

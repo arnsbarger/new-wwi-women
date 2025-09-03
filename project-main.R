@@ -61,6 +61,10 @@ source("~/git/new-wwi-women/clean-other-data.R")
 source("~/git/new-wwi-women/clean-cd-data.R")
 
 # Compute SSIV
-# source()
+source("~/git/new-wwi-women/write-ssiv.R")
 
 # Analysis
+
+
+# Visualizations
+source("~/git/new-wwi-women/viz.R")
