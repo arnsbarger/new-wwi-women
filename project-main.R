@@ -12,15 +12,15 @@ options(
 )
 
 # Load libraries
-library(readxl)
+library(readxl) # for importing excel data
 library(dplyr)
 library(haven)
-library(stringr)
+library(stringr) # for manipulating strings
 library(tidyr)
 library(tigris)
 library(sf)
 library(raster)
-library(ggplot2)
+library(ggplot2) # for visualizations
 library(ggmap)
 library(stringr)
 library(geosphere)
@@ -28,9 +28,12 @@ library(viridis)
 library(cowplot)
 library(purrr)
 library(tidyverse)
+library(fixest) # for fixed effects, clustering
+library(modelsummary) # for regression tables
+library(stargazer)
+library(estimatr)
 
-
-# Clean Voteview data
+# Clean LHS - Voteview data
 source("~/git/new-wwi-women/clean-voteview.R")
 
 # Harmonize congressional district boundaries from 63rd and 65th to 66th Congress.
@@ -60,10 +63,13 @@ source("~/git/new-wwi-women/clean-other-data.R")
 # Merge & clean RHS congressional district-level data.
 source("~/git/new-wwi-women/clean-cd-data.R")
 
+# Analysis - DiD
+source("~/git/new-wwi-women/analysis.R")
+
 # Compute SSIV
 source("~/git/new-wwi-women/write-ssiv.R")
 
-# Analysis
+# Analysis - SSIV
 
 
 # Visualizations
