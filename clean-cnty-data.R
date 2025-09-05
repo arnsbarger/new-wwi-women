@@ -84,7 +84,7 @@ desired_vars <- c( # Set variables I'd like to pull from 1910 and 1860, whenever
   "totpop", # Total population 1910
   "urb910", # Urban population 1910
   "urb25", # Population cities 25K+ 1910
-  "urb1900", # Population places 2500+, 1910
+  "urb920", # Population places 2500+, 1910
   "urb860", # Population places 2500+, 1900
   "mtot", # Total male population
   "ftot", # Total female population
@@ -115,7 +115,8 @@ cnty_icpsr1910 <-
   rename_with(~ paste0(.x, "1910")) %>%
   rename(
     icpsrst = state1910,
-    icpsrcty = county1910
+    icpsrcty = county1910,
+    urb1910 = urb9101910
   ) %>%
   filter(
     icpsrcty > 0,
@@ -143,7 +144,8 @@ cnty_icpsr1920 <-
   rename_with(~ paste0(.x, "1920")) %>%
   rename(
     icpsrst = state1920,
-    icpsrcty = county1920
+    icpsrcty = county1920,
+    urb1920 = urb9201920
   ) %>%
   filter(
     icpsrcty > 0,
@@ -197,8 +199,10 @@ cnty_nber <-
     ),
     .groups = "drop"
   ) %>%
-  rename_with(~ paste0(.x, "nber"), .cols = c("totpop1910", "ftot1910", "wftot1910", "totpop1920", "ftot1920", "wftot1920"))
-
+  rename_with(
+    ~ sub("([a-zA-Z_]+)(\\d{4})", "\\1nber\\2", .x),
+    .cols = c("totpop1910", "ftot1910", "wftot1910", "totpop1920", "ftot1920", "wftot1920")
+  )
 # Civil War ####
 cnty_civil_war <- 
   read_dta("raw/civil war/UA_battle_and_casualty_data_2020-06-15.dta") %>%
