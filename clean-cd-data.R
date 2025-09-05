@@ -25,25 +25,25 @@ data <- final_data %>%
     raw_change_flfp_Z = as.numeric(scale(raw_change_flfp)),
     
     # Female labor force participation rates, working-age denominator
-    flfp1900_16plus = (flf1900 / totf16plus1900) * 100,
-    flfp1910_16plus = (flf1910 / totf16plus1910) * 100,
-    flfp1920_16plus = (flf1920 / totf16plus1920) * 100,
-    raw_change_flfp_16plus = flfp1920_16plus - flfp1910_16plus,
-    raw_change_flfp1900_10_16plus = flfp1910_16plus - flfp1900_16plus,
+    flfp_16plus1900 = (flf1900 / totf16plus1900) * 100,
+    flfp_16plus1910 = (flf1910 / totf16plus1910) * 100,
+    flfp_16plus1920 = (flf1920 / totf16plus1920) * 100,
+    raw_change_flfp_16plus = flfp_16plus1920 - flfp_16plus1910,
+    raw_change_flfp1900_10_16plus = flfp_16plus1910 - flfp_16plus1900,
     raw_change_flfp_16plus_Z = as.numeric(scale(raw_change_flfp_16plus)),
     
     # Male labor force participation rates, working-age denominator
-    mlfp1900_16plus = (mlf1900 / totm16plus1900) * 100,
-    mlfp1910_16plus = (mlf1910 / totm16plus1910) * 100,
-    mlfp1920_16plus = (mlf1920 / totm16plus1920) * 100,
-    raw_change_mlfp1910_20_16plus = mlfp1920_16plus - mlfp1910_16plus,
-    raw_change_mlfp1900_10_16plus = mlfp1910_16plus - mlfp1900_16plus,
+    mlfp_16plus1900 = (mlf1900 / totm16plus1900) * 100,
+    mlfp_16plus1910 = (mlf1910 / totm16plus1910) * 100,
+    mlfp_16plus1920 = (mlf1920 / totm16plus1920) * 100,
+    raw_change_mlfp1910_20_16plus = mlfp_16plus1920 - mlfp_16plus1910,
+    raw_change_mlfp1900_10_16plus = mlfp_16plus1910 - mlfp_16plus1900,
     raw_change_mlfp_16plus_Z = as.numeric(scale(raw_change_mlfp1910_20_16plus)),
     
     # Chiswick & Robinson labor force participation rates
-    flfp1910_cr = ((flf1910 + flf_famfarm_cr1910) / totf16plus1910) * 100,
-    flfp1920_cr = ((flf1920 + flf_famfarm_cr1920) / totf16plus1920) * 100,
-    raw_change_flfp_cr = flfp1920_cr - flfp1910_cr,
+    flfp_cr1910 = ((flf1910 + flf_famfarm_cr1910) / totf16plus1910) * 100,
+    flfp_cr1920 = ((flf1920 + flf_famfarm_cr1920) / totf16plus1920) * 100,
+    raw_change_flfp_cr = flfp_cr1920 - flfp_cr1910,
     
     # Common denominator for 1910/1920
     raw_change_flfp_commondenom = ((flf1920 - flf_ind1051920 - flf_ind8261920) - (flf1910 - flf_ind1051910 - flf_ind8261910)) * 100 / totf16plus1910,
@@ -65,11 +65,11 @@ data <- final_data %>%
     raw_change_wflfp = wflfp1920 - wflfp1910,
     
     # White women, working-age denominator
-    wflfp1900_16plus = (wflf1900 / totwf16plus1900) * 100,
-    wflfp1910_16plus = (wflf1910 / totwf16plus1910) * 100,
-    wflfp1920_16plus = (wflf1920 / totwf16plus1920) * 100,
-    raw_change_wflfp_16plus = wflfp1920_16plus - wflfp1910_16plus,
-    raw_change_wflfp_16plus190010 = wflfp1910_16plus - wflfp1900_16plus,
+    wflfp_16plus1900 = (wflf1900 / totwf16plus1900) * 100,
+    wflfp_16plus1910 = (wflf1910 / totwf16plus1910) * 100,
+    wflfp_16plus1920 = (wflf1920 / totwf16plus1920) * 100,
+    raw_change_wflfp_16plus = wflfp_16plus1920 - wflfp_16plus1910,
+    raw_change_wflfp_16plus190010 = wflfp_16plus1910 - wflfp_16plus1900,
     
     # NPWAI-designated war-related industries
     flf_npwai1900 = rowSums(dplyr::select(., matches("^flf_ind(336|346|358|337|379|357|338|348|388|347|399|309|308|469|307|456|419|477|467|476|468|488|448|487|489|326|316|319|439|436|437|449|446|416|407|417|409|406|418|429|458|459|356|376|386|367|478|378)1900$"))),
@@ -113,7 +113,8 @@ data <- final_data %>%
     pct_illiterate1910 = (tillit101910 / totpop1910) * 100,
     farms_pc1910 = farms1910 / totpop1910,
     pct_ownacimp1910 = (acimpown1910 / acresown1910) * 100,
-    pct_urb1910 = (urb9101910 / totpop1910) * 100,
+    pct_urb1910 = (urb1910 / totpop1910) * 100,
+    pct_urb1920 = (urb1920 / totpop1920) * 100,
     pct_white1910 = (wftot1910 + wmtot1910) * 100 / totpop1910,
     pct_black1910 = (negftot1910 + negmtot1910) * 100 / totpop1910,
     pct_black1920 = (negftot1920 + negmtot1920) * 100 / totpop1920,
@@ -131,7 +132,7 @@ data <- final_data %>%
                       (flf1920 + flf_famfarm_cr1920 + mlf1920 + mlf_famfarm_cr1920)) * 100,
     raw_change_share_lf_f = pct_lf_f1920 - pct_lf_f1910,
     
-    # Census divisions
+    # Census divisions: https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf
     census_division = as.factor(case_when(
       icpsrst1920 %in% c(01, 02, 03, 04, 05, 06) ~ 1, # New England: CT, ME, MA, NH, RI, VT
       icpsrst1920 %in% c(12, 13, 14) ~ 2, # Middle Atlantic: NJ, NY, PA
@@ -145,9 +146,9 @@ data <- final_data %>%
       TRUE ~ NA_real_
     )),
     northeast = if_else(census_division %in% c(1, 2), 1, 0, missing = 0),
-    south = if_else(census_division %in% c(3, 4, 5), 1, 0, missing = 0),
-    west = if_else(census_division %in% c(6, 7), 1, 0, missing = 0),
-    midwest = if_else(census_division %in% c(9, 10), 1, 0, missing = 0),
+    midwest = if_else(census_division %in% c(3, 4), 1, 0, missing = 0),
+    south = if_else(census_division %in% c(5, 6, 7), 1, 0, missing = 0),
+    west = if_else(census_division %in% c(8, 9), 1, 0, missing = 0),
     pct_black_GM = pct_black1910 * (south == 0)
   )
 
