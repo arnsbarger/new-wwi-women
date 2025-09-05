@@ -7,7 +7,7 @@ which(duplicated(final_data %>% dplyr::select(district, icpsrst1920)) | duplicat
 table(final_data$icpsrst1920, final_data$district) # Need to duplicate PA-00 x 4, IL-00 x 2
 
 data <- final_data %>% 
-  # This step isn't strictly necessary if only keeping m4_ weights from merge-cnty-to-cd.R; written for eralization after exploring robustness to other weighting schemes
+  # This step isn't strictly necessary if only keeping m4_ weights from merge-cnty-to-cd.R; written for generalization after exploring robustness to other weighting schemes
   pivot_longer( 
     cols = matches("^m[1-4]_"),  
     names_to = c("weight_scheme", ".value"),
@@ -84,7 +84,7 @@ data <- final_data %>%
     raw_change_flfp_npwai_Z = as.numeric(scale(raw_change_flfp_npwai)),
     
     # Ag 
-    pct_ag = (flf_ind1051910 / flf1910) * 100,
+    pct_ag1910 = (flf_ind1051910 / flf1910) * 100,
     
     # Manufacturing
     flfmfg1910 = rowSums(dplyr::select(., matches("^flf_ind(306|307|308|309|316|319|326|336|337|338|346|347|348|356|357|358|367|376|378|379|386|388|399|406|407|409|416|417|418|419|429|436|437|439|446|448|449|456|458|459|467|468|469|476|477|478|487|488|489)1910$"))),
@@ -131,26 +131,27 @@ data <- final_data %>%
                       (flf1920 + flf_famfarm_cr1920 + mlf1920 + mlf_famfarm_cr1920)) * 100,
     raw_change_share_lf_f = pct_lf_f1920 - pct_lf_f1910,
     
-    # Census regions
-    census_region = as.factor(case_when(
-      icpsrst1920 %in% c(6, 4, 2, 3, 5, 1) ~ 1, # "VT", "NH", "ME", "MA", "RI", "CT"
-      icpsrst1920 %in% c(12, 14, 13) ~ 2, # "NJ", "PA", "NY"
-      icpsrst1920 %in% c(11, 52, 56, 40, 47, 48, 44, 43) ~ 3, # "DE", "MD", "WV", "VA", "NC", "SC", "GA", "FL"
-      icpsrst1920 %in% c(51, 54, 46, 41) ~ 4, # "KY", "TN", "MS", "AL"
-      icpsrst1920 %in% c(42, 45, 53, 49) ~ 5, # "AR", "LA", "OK", "TX"
-      icpsrst1920 %in% c(66, 61, 62, 67, 65, 63, 68, 64) ~ 6, # "NM", "AZ", "CO", "UT", "NV", "ID", "WY", "MT"
-      icpsrst1920 %in% c(73, 72, 71) ~ 7, # "WA", "OR", "CA"
-      icpsrst1920 %in% c(36, 37, 35, 32, 33, 31, 34) ~ 9, # "ND", "SD", "NE", "KS", "MN", "IA", "MO"
-      icpsrst1920 %in% c(25, 21, 22, 23, 24) ~ 10, # "WI", "IL", "IN", "MI", "OH"
-      TRUE ~ NA_real_ # for missing or unclassified states
+    # Census divisions
+    census_division = as.factor(case_when(
+      icpsrst1920 %in% c(01, 02, 03, 04, 05, 06) ~ 1, # New England: CT, ME, MA, NH, RI, VT
+      icpsrst1920 %in% c(12, 13, 14) ~ 2, # Middle Atlantic: NJ, NY, PA
+      icpsrst1920 %in% c(21, 22, 23, 24, 25) ~ 3, # East North Central: IL, IN, MI, OH, WI
+      icpsrst1920 %in% c(31, 32, 33, 34, 35, 36, 37) ~ 4, # West North Central: IA, KS, MN, MO, NE, ND, SD
+      icpsrst1920 %in% c(11, 40, 43, 44, 47, 48, 52, 55, 56) ~ 5, # South Atlantic: DE, VA, FL, GA, NC, SC, MD, DC, WV
+      icpsrst1920 %in% c(41, 46, 51, 54) ~ 6, # East South Central: AL, MS, KY, TN
+      icpsrst1920 %in% c(42, 45, 49, 53) ~ 7, # West South Central: AR, LA, TX, OK
+      icpsrst1920 %in% c(61, 62, 63, 64, 65, 66, 67, 68) ~ 8, # Mountain: AZ, CO, ID, MT, NV, NM, UT, WY
+      icpsrst1920 %in% c(71, 72, 73, 81, 82) ~ 9, # Pacific: CA, OR, WA, AK, HI
+      TRUE ~ NA_real_
     )),
-    northeast = if_else(census_region %in% c(1, 2), 1, 0, missing = 0),
-    south = if_else(census_region %in% c(3, 4, 5), 1, 0, missing = 0),
-    west = if_else(census_region %in% c(6, 7), 1, 0, missing = 0),
-    midwest = if_else(census_region %in% c(9, 10), 1, 0, missing = 0),
+    northeast = if_else(census_division %in% c(1, 2), 1, 0, missing = 0),
+    south = if_else(census_division %in% c(3, 4, 5), 1, 0, missing = 0),
+    west = if_else(census_division %in% c(6, 7), 1, 0, missing = 0),
+    midwest = if_else(census_division %in% c(9, 10), 1, 0, missing = 0),
     pct_black_GM = pct_black1910 * (south == 0)
   )
 
+# Add district identifier (ID_STATEDIST)
 cw <- read_excel("raw/geo/icpsrcnt.xls") %>%
   distinct(State, STATEICP) %>%
   filter(!is.na(STATEICP))
@@ -225,6 +226,8 @@ data <- merge(
   all.x = TRUE
 )
 
+# Fix variable types
+data[c("yeaV002", "yeaV061", "yeaV228", "yeaV238")] <- lapply(data[c("yeaV002", "yeaV061", "yeaV228", "yeaV238")], as.numeric)
 
 
 
